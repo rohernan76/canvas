@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Canvas</title>
+
+	<style>
+		#canvas {
+			margin: 0 auto;
+		}
+	</style>
+</head>
+<body>
+
+	<canvas id="canvas"></canvas>
+
+	<script>
+		var canvas= document.getElementById("canvas");
+
+		canvas.width = "1000";
+		canvas.height = "800";
+
+		var ctx = canvas.getContext("2d");
+
+		// var ship = {
+		// 	x: 100,
+		// 	y: 100,
+		// 	vx: 2,
+		// 	vy: 2
+		// };
+
+		function Ship (x, y) {  // this is a constructor function for many ships!
+			this.x = x;
+			this.y = y;
+			this.vx = 5;
+			this.vy = 5;
+		}
+
+		var ships= [];
+
+		var mouseCoords = {x : 0, y : 0};
+
+		function update() {
+			ships.push(new Ship(mouseCoords.x, mouseCoords.y));
+            for (var i = 0; i < ships.length; i++ ){
+                var ship = ships[i];
+                
+                var angle = Math.atan2(mouseCoords.y - ship.y, mouseCoords.x - ship.x);
+
+                var x_part = Math.cos(angle);
+                var y_part = Math.sin(angle);
+
+                ship.vx += x_part * 0.2;
+                ship.vy += y_part * 0.2;
+
+                ship.x += ship.vx;
+                ship.y += ship.vy;
+            }
+        }
+
+		function draw() {
+            ctx.fillStyle="#255";
+            ctx.fillRect(0, 0, 1000, 800);
+
+            for (var i = 0; i < ships.length; i++) {
+                ctx.beginPath();
+                ctx.arc(ships[i].x, ships[i].y, 10, 0, Math.PI * 2);
+                ctx.fillStyle = "#ffff00";
+                ctx.fill();
+            }
+        }
+
+		function loop () {
+			update();
+			draw();
+			window.requestAnimationFrame(loop);
+		}
+
+		loop();
+
+		canvas.addEventListener("click", function(evt) {
+            var rect = canvas.getBoundingClientRect();
+
+            ships.push(new Ship(evt.clientX - rect.left, evt.clientY - rect.top));
+        });
+
+		canvas.addEventListener("mousemove", function(evt) {
+			var rect = canvas.getBoundingClientRect(); // x & y of the canvas
+
+			mouseCoords.x = evt.clientX - rect.left;
+			mouseCoords.y = evt.clientY - rect.top;
+
+		});
+
+
+	</script>
+
+</body>
+</html>
